@@ -32,17 +32,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                // TODO a trebuit sa-i dau CSRF disable ca sa mearga in Postman + @RequestBody on create
+                .csrf().disable()
                 .authorizeRequests()
-                //.antMatchers("/", "/customers").hasRole("ADMIN")//permitAll()
+                .antMatchers("/**", "/customers/**", "/accounts/**").permitAll()//.hasRole("ADMIN")//permitAll()
                 .and()
                 .formLogin().permitAll()
                 .and()
                 .logout().permitAll()
-                .and().exceptionHandling();
-//                .authorizeRequests()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .httpBasic();
+                .and().exceptionHandling()
+                .and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .httpBasic();
     }
 }

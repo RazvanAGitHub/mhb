@@ -5,10 +5,13 @@ import com.program.mhb.dto.AccountShortViewDto;
 import com.program.mhb.dto.AccountViewDto;
 import com.program.mhb.service.AccountService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -41,11 +44,15 @@ public class AccountController {
         return accountService.getAllByCustomerId(id);
     }
 
-    @PostMapping(value = "/save")
-    public void save(Account account) {
-        log.info("###### In Controller preparing to save the mother fucker account");
-        accountService.save(account);
-//        AccountViewDto accountViewDto = new AccountViewDto(account.getCustomer().getId(), account.getIban(), account.getCurrency());
-//        return accountViewDto;
+    @PostMapping(value = "/create")
+    // TODO fara @RequestBody nu merge + CSRF disabled
+    public void create(@RequestBody AccountViewDto accountViewDto) {
+        accountService.saveSmart(accountViewDto);
+    }
+
+    @DeleteMapping(value = "/delete")
+    // TODO ceva de genul: http://localhost:8080/accounts/delete?id=1
+    public void delete(@RequestParam("id") int id) {
+        accountService.deleteById(id);
     }
 }

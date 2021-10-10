@@ -14,5 +14,7 @@ public interface AccountService {
 
     List<AccountShortViewDto> getAllByCustomerId(int customerId);
 
-    void save(Account account);
+    void saveSmart(AccountViewDto accountViewDto);
+
+    void deleteById(int id);
 }
