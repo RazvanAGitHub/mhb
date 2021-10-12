@@ -38,6 +38,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public List<Account> getAllBulk() {
+        return accountRepository.findAll();
+    }
+
+    @Override
     public AccountViewDto getById(int id) {
         Account account;
         Optional<Account> optionalAccount = accountRepository.findById(id);
@@ -60,6 +65,10 @@ public class AccountServiceImpl implements AccountService {
                 .forEach(account -> accountsByCustomerId
                         .add(new AccountShortViewDto(account.getIban(), account.getCurrency())));
         return accountsByCustomerId;
+    }
+
+    public List<Account> getAccountsByCustomer_Id(int id) {
+        return accountRepository.getAccountsByCustomer_Id(id);
     }
 
     @Override

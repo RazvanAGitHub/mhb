@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Save Transaction</title>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h3>Transaction</h3>
+    <div sec:authorize="isAuthenticated()">
+        User: <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
+        <span th:text="${#authentication.getPrincipal().authorities}"></span> |
+        <a th:href="@{/showStaffPage}">Staff</a>
+        <!-- Add a logout button -->
+        <form action="#" th:action="@{/logout}" method="POST">
+            <input type="submit" value="Logout" class="btn btn-outline-primary btn-sm mt-1"/>
+        </form>
+    </div>
+    <hr>
+
+    <p class="h4 mb-4">Create Transaction</p>
+
+    <form action="#" th:action="@{/transactions/create}"
+          th:object="${transaction}" method="POST">
+
+        Account Id:
+        <input type="text" th:field="*{accountId}"
+               class="form-control mb-4 col-4"/>
+
+        Details:
+        <input type="text" th:field="*{transactionDetails}"
+               class="form-control mb-4 col-4"/>
+
+        Debit:
+        <input type="text" th:field="*{debit}"
+               class="form-control mb-4 col-4"/>
+
+        Credit:
+        <input type="text" th:field="*{credit}"
+               class="form-control mb-4 col-4"/>
+
+        <button type="submit" class="btn btn-info col-2">Save</button>
+
+    </form>
+</div>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+

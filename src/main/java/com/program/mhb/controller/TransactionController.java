@@ -1,22 +1,27 @@
 package com.program.mhb.controller;
 
 import com.program.mhb.domain.Transaction;
+import com.program.mhb.dto.AccountViewDto;
 import com.program.mhb.dto.TransactionInsertDto;
 import com.program.mhb.dto.TransactionViewDto;
 import com.program.mhb.service.TransactionService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/transactions")
 @Log4j2
 public class TransactionController {
@@ -27,15 +32,29 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+//    @GetMapping
+//    public List<TransactionViewDto> getAll() {
+//        log.info("*** List of transactions: ");
+//        return transactionService.getAll();
+//    }
+
     @GetMapping
-    public List<TransactionViewDto> getAll() {
+    public String getAll(Model model) {
         log.info("*** List of transactions: ");
-        return transactionService.getAll();
+//        return transactionService.getAll();
+        model.addAttribute("transactions", transactionService.getAll());
+        return "/transactions/list-transactions";
     }
 
-    @GetMapping(value = "account/{id}")
-    public List<TransactionViewDto> getAllByAccountId(@PathVariable("id") int accountId) {
-        return transactionService.getAllByAccountId(accountId);
+//    @GetMapping(value = "account/{id}")
+//    public List<TransactionViewDto> getAllByAccountId(@PathVariable("id") int accountId) {
+//        return transactionService.getAllByAccountId(accountId);
+//    }
+
+    @GetMapping(value = "account")
+    public String getAllByAccountId(@RequestParam("id") int id, Model model) {
+        model.addAttribute("transactions", transactionService.getAllByAccountId(id));
+        return "transactions/list-transactions-by-account-id";
     }
 
     @GetMapping(value = "account/{id}/date-time/{afterDateTime}")
@@ -51,8 +70,28 @@ public class TransactionController {
         return transactionService.getAllByAccountIdAndBetweenDateTime(id, startDateTime, endDateTime);
     }
 
+
+    @GetMapping("/showFormForAdd")
+    public String showFormForAdd(Model theModel) {
+
+        // create model attribute to bind form data
+        TransactionViewDto transactionViewDto = new TransactionViewDto();
+
+        theModel.addAttribute("transaction", transactionViewDto);
+
+        return "transactions/transaction-form";
+    }
+
+//    @PostMapping(value = "/create")
+//    public void create(@RequestBody TransactionInsertDto transactionInsertDto) {
+//        transactionService.save(transactionInsertDto);
+//    }
+
     @PostMapping(value = "/create")
-    public void create(@RequestBody TransactionInsertDto transactionInsertDto) {
+    public String create(@ModelAttribute("transaction")  TransactionInsertDto transactionInsertDto) {
         transactionService.save(transactionInsertDto);
+
+        return "redirect:/transactions";
+//        return "redirect:/transactions/list-transactions-by-account-id";
     }
 }
