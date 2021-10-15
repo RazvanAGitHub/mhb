@@ -21,7 +21,6 @@ import javax.persistence.Table;
 @Table(name = "accounts")
 @Getter
 @Setter
-@Data
 public class Account {
 
     @Id

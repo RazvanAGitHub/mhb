@@ -3,19 +3,28 @@ package com.program.mhb.service;
 import com.program.mhb.domain.Transaction;
 import com.program.mhb.dto.TransactionInsertDto;
 import com.program.mhb.dto.TransactionViewDto;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Validated
 public interface TransactionService {
 
+    @Transactional(readOnly = true)
     List<TransactionViewDto> getAll();
 
-    List<TransactionViewDto> getAllByAccountId(int accountId);
+    @Transactional
+    List<TransactionViewDto> getAllByAccountId(@Valid int accountId);
 
-    List<TransactionViewDto> getAllByAccountIdAndAfterDateTime(int accountId, LocalDateTime afterDateTime);
+    @Transactional
+    List<TransactionViewDto> getAllByAccountIdAndAfterDateTime(@Valid int accountId, @Valid LocalDateTime afterDateTime);
 
-    List<TransactionViewDto> getAllByAccountIdAndBetweenDateTime(int accountId, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    @Transactional
+    List<TransactionViewDto> getAllByAccountIdAndBetweenDateTime(@Valid int accountId, @Valid LocalDateTime startDateTime, @Valid LocalDateTime endDateTime);
 
-    void save(TransactionInsertDto transactionInsertDto);
+    @Transactional
+    void save(@Valid TransactionInsertDto transactionInsertDto);
 }

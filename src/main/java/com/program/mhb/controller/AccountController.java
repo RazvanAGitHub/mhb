@@ -1,6 +1,7 @@
 package com.program.mhb.controller;
 
 import com.program.mhb.dto.AccountViewDto;
+import com.program.mhb.exception.AccountException;
 import com.program.mhb.service.AccountService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/accounts")
@@ -67,7 +70,7 @@ public class AccountController {
     @PostMapping(value = "/create")
     // TODO fara @RequestBody nu merge + CSRF disabled
 //    public void create(@RequestBody AccountViewDto accountViewDto) {
-    public String create(@ModelAttribute("account") AccountViewDto accountViewDto) {
+    public String create(@Valid @ModelAttribute("account") AccountViewDto accountViewDto) throws AccountException {
         accountService.saveSmart(accountViewDto);
 
         return "redirect:/accounts";

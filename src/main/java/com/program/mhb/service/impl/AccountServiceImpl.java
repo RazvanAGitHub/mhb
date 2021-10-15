@@ -4,13 +4,17 @@ import com.program.mhb.domain.Account;
 import com.program.mhb.domain.Customer;
 import com.program.mhb.dto.AccountShortViewDto;
 import com.program.mhb.dto.AccountViewDto;
+import com.program.mhb.exception.AccountErrorDetails;
+import com.program.mhb.exception.AccountException;
 import com.program.mhb.exception.NotFoundException;
+import com.program.mhb.helper.AccountValidator;
 import com.program.mhb.repository.AccountRepository;
 import com.program.mhb.repository.CustomerRepository;
 import com.program.mhb.service.AccountService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +25,12 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
+    private final AccountValidator accountValidator;
 
-    public AccountServiceImpl(AccountRepository accountRepository, CustomerRepository customerRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, CustomerRepository customerRepository, AccountValidator accountValidator) {
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
+        this.accountValidator = accountValidator;
     }
 
     @Override
@@ -37,6 +43,9 @@ public class AccountServiceImpl implements AccountService {
         return accounts;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Account> getAllBulk() {
         return accountRepository.findAll();
@@ -72,10 +81,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void saveSmart(AccountViewDto accountViewDto) {
+    public void saveSmart(@Valid AccountViewDto accountViewDto) throws AccountException {
         log.info("#################### Trying to Save smart");
         Account account = new Account();
 
+//        accountValidator.isAccountViewDtoValid(accountViewDto);
         Customer customer;
         Optional<Customer> customerOptional = customerRepository.findById(accountViewDto.getCustomer_id());
 
@@ -86,8 +96,18 @@ public class AccountServiceImpl implements AccountService {
         }
 
         account.setCustomer(customer);
-        account.setIban(accountViewDto.getIban());
-        account.setCurrency(accountViewDto.getCurrency());
+        if (!accountViewDto.getIban().isBlank() || !accountViewDto.getIban().isEmpty()) {
+            account.setIban(accountViewDto.getIban());
+        } else {
+//            throw new AccountException(AccountErrorDetails.ACCOUNT_IBAN_INVALID.getReasonPhrase(), AccountErrorDetails.ACCOUNT_IBAN_INVALID.getValue());
+        }
+
+        if (accountViewDto.getCurrency() != null) {
+            account.setCurrency(accountViewDto.getCurrency());
+        } else {
+//            throw new AccountException(AccountErrorDetails.ACCOUNT_CURRENCY_INVALID.getReasonPhrase(), AccountErrorDetails.ACCOUNT_CURRENCY_INVALID.getValue());
+        }
+
         accountRepository.save(account);
         log.info("#################### Account should be created smart now");
     }

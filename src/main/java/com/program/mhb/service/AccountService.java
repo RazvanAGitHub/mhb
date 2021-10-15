@@ -3,22 +3,37 @@ package com.program.mhb.service;
 import com.program.mhb.domain.Account;
 import com.program.mhb.dto.AccountShortViewDto;
 import com.program.mhb.dto.AccountViewDto;
+import com.program.mhb.exception.AccountException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 public interface AccountService {
 
+    @Transactional(readOnly = true)
     List<AccountViewDto> getAll();
 
+    /**
+     * Get all accounts...
+     */
+    @Transactional(readOnly = true)
     List<Account> getAllBulk();
 
-    AccountViewDto getById(int id);
+    @Transactional
+    AccountViewDto getById(@Valid int id);
 
-    List<AccountShortViewDto> getAllByCustomerId(int customerId);
+    @Transactional
+    List<AccountShortViewDto> getAllByCustomerId(@Valid int customerId);
 
-    List<Account> getAccountsByCustomer_Id(int id);
+    @Transactional
+    List<Account> getAccountsByCustomer_Id(@Valid int id);
 
-    void saveSmart(AccountViewDto accountViewDto);
+    @Transactional
+    void saveSmart(@Valid AccountViewDto accountViewDto) throws AccountException;
 
-    void deleteById(int id);
+    @Transactional
+    void deleteById(@Valid int id);
 }
