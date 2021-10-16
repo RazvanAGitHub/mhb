@@ -81,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void saveSmart(@Valid AccountViewDto accountViewDto) throws AccountException {
+    public void save(@Valid AccountViewDto accountViewDto) throws AccountException {
         log.info("#################### Trying to Save smart");
         Account account = new Account();
 
@@ -96,17 +96,8 @@ public class AccountServiceImpl implements AccountService {
         }
 
         account.setCustomer(customer);
-        if (!accountViewDto.getIban().isBlank() || !accountViewDto.getIban().isEmpty()) {
-            account.setIban(accountViewDto.getIban());
-        } else {
-//            throw new AccountException(AccountErrorDetails.ACCOUNT_IBAN_INVALID.getReasonPhrase(), AccountErrorDetails.ACCOUNT_IBAN_INVALID.getValue());
-        }
-
-        if (accountViewDto.getCurrency() != null) {
-            account.setCurrency(accountViewDto.getCurrency());
-        } else {
-//            throw new AccountException(AccountErrorDetails.ACCOUNT_CURRENCY_INVALID.getReasonPhrase(), AccountErrorDetails.ACCOUNT_CURRENCY_INVALID.getValue());
-        }
+        account.setIban(accountViewDto.getIban());
+        account.setCurrency(accountViewDto.getCurrency());
 
         accountRepository.save(account);
         log.info("#################### Account should be created smart now");

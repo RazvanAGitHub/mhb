@@ -1,9 +1,11 @@
 package com.program.mhb.controller;
 
+import com.program.mhb.domain.Account;
 import com.program.mhb.domain.Transaction;
 import com.program.mhb.dto.AccountViewDto;
 import com.program.mhb.dto.TransactionInsertDto;
 import com.program.mhb.dto.TransactionViewDto;
+import com.program.mhb.service.AccountService;
 import com.program.mhb.service.TransactionService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,22 +29,18 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final AccountService accountService;
 
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService, AccountService accountService) {
         this.transactionService = transactionService;
+        this.accountService = accountService;
     }
-
-//    @GetMapping
-//    public List<TransactionViewDto> getAll() {
-//        log.info("*** List of transactions: ");
-//        return transactionService.getAll();
-//    }
 
     @GetMapping
     public String getAll(Model model) {
         log.info("*** List of transactions: ");
-//        return transactionService.getAll();
         model.addAttribute("transactions", transactionService.getAll());
+
         return "/transactions/list-transactions";
     }
 
@@ -54,41 +52,42 @@ public class TransactionController {
     @GetMapping(value = "account")
     public String getAllByAccountId(@RequestParam("id") int id, Model model) {
         model.addAttribute("transactions", transactionService.getAllByAccountId(id));
+
         return "transactions/list-transactions-by-account-id";
     }
 
-    @GetMapping(value = "account/{id}/date-time/{afterDateTime}")
-    public List<TransactionViewDto> getAllByAccountIdAndAfterDateTime(@PathVariable("id") int id, @PathVariable("afterDateTime") LocalDateTime afterDateTime) {
-        return transactionService.getAllByAccountIdAndAfterDateTime(id, afterDateTime);
+    @GetMapping(value = "account/{id}/after-date-time/{afterDateTime}")
+    public String getAllByAccountIdAndAfterDateTime(@PathVariable("id") int id, @PathVariable("afterDateTime") LocalDateTime afterDateTime, Model model) {
+        model.addAttribute("transactions", transactionService.getAllByAccountIdAndAfterDateTime(id, afterDateTime));
+
+        return "transactions/list-transactions-by-account-id";
     }
 
     @GetMapping(value = "account/{id}/start-date-time/{startDateTime}/end-date-time/{endDateTime}")
-    public List<TransactionViewDto> getAllByAccountIdAndBetweenDateTime(
+    public String getAllByAccountIdAndBetweenDateTime(
             @PathVariable("id") int id,
             @PathVariable("startDateTime") LocalDateTime startDateTime,
-            @PathVariable("endDateTime") LocalDateTime endDateTime) {
-        return transactionService.getAllByAccountIdAndBetweenDateTime(id, startDateTime, endDateTime);
-    }
+            @PathVariable("endDateTime") LocalDateTime endDateTime, Model model) {
+        model.addAttribute("transactions", transactionService.getAllByAccountIdAndBetweenDateTime(id, startDateTime, endDateTime));
 
+        return "transactions/list-transactions-by-account-id";
+    }
 
     @GetMapping("/showFormForAdd")
     public String showFormForAdd(Model theModel) {
 
         // create model attribute to bind form data
         TransactionViewDto transactionViewDto = new TransactionViewDto();
+        List<Account> accounts = accountService.getAllBulk();
 
         theModel.addAttribute("transaction", transactionViewDto);
+        theModel.addAttribute("accounts", accounts);
 
         return "transactions/transaction-form";
     }
 
-//    @PostMapping(value = "/create")
-//    public void create(@RequestBody TransactionInsertDto transactionInsertDto) {
-//        transactionService.save(transactionInsertDto);
-//    }
-
     @PostMapping(value = "/create")
-    public String create(@ModelAttribute("transaction")  TransactionInsertDto transactionInsertDto) {
+    public String create(@ModelAttribute("transaction") TransactionInsertDto transactionInsertDto) {
         transactionService.save(transactionInsertDto);
 
         return "redirect:/transactions";

@@ -1,9 +1,6 @@
 package com.program.mhb.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -31,8 +28,7 @@ public class Account {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(nullable = false, unique = true)
-    // TODO - cat trebuie sa fie iban-ul - 24 in Romania
+    @Column(nullable = false, unique = true, length = 24)
     private String iban;
 
     @Column(nullable = false)

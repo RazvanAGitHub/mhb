@@ -8,7 +8,6 @@ import com.program.mhb.exception.NotFoundException;
 import com.program.mhb.repository.AccountRepository;
 import com.program.mhb.repository.TransactionRepository;
 import com.program.mhb.service.TransactionService;
-import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -90,7 +89,7 @@ public class TransactionServiceImpl implements TransactionService {
                         .credit(transaction.getCredit())
                         .balance(transaction.getBalance())
                         .build()));
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@ transactions = " + transactions);
+//        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@ transactions = " + transactions);
         return transactions;
     }
 
@@ -131,4 +130,33 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionRepository.save(transactionSave);
     }
+// TODO de sters saveSmart()
+//    @Override
+//    public void saveSmart(@Valid Transaction transaction) {
+//        Account account;
+//        Optional<Account> accountOptional = accountRepository.findById(transaction.getAccount().getId());
+//
+//        if (accountOptional.isPresent()) {
+//            account = accountOptional.get();
+////            accountId = account.getId();
+//        } else {
+//            throw new NotFoundException("Account with id: " + transaction.getAccount().getId() + " not found.");
+//        }
+//
+//        long lastBalance = 0;
+//        Optional<Transaction> lastTransactionOptional = transactionRepository.getTransactionsByAccount_IdOrderByDateTimeDesc(account.getId())
+//                .stream()
+//                .findFirst();
+//        if (lastTransactionOptional.isPresent()) {
+//            lastBalance = lastTransactionOptional.get().getBalance();
+//        }
+//
+//        log.info("_________________ lastBalance = " + lastBalance);
+//        long calculatedBalance =  lastBalance + transaction.getDebit() + transaction.getCredit();
+//        log.info("_________________ calculatedBalance = " + calculatedBalance);
+//
+//        transaction.setBalance(calculatedBalance);
+//
+//        transactionRepository.save(transaction);
+//    }
 }

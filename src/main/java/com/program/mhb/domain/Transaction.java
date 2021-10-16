@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transactions")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,9 +39,11 @@ public class Transaction {
     @Column(name = "transaction_details")
     private String transactionDetails;
 
-    private long debit;
+    @Column(nullable = false)
+    private Long debit;
 
-    private long credit;
+    @Column(nullable = false)
+    private Long credit;
 
-    private long balance;
+    private Long balance;
 }

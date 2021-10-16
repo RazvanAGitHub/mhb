@@ -31,8 +31,8 @@ public interface AccountService {
     @Transactional
     List<Account> getAccountsByCustomer_Id(@Valid int id);
 
-    @Transactional
-    void saveSmart(@Valid AccountViewDto accountViewDto) throws AccountException;
+    @Transactional(rollbackFor = AccountException.class)
+    void save(@Valid AccountViewDto accountViewDto) throws AccountException;
 
     @Transactional
     void deleteById(@Valid int id);

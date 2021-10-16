@@ -51,9 +51,9 @@
         <tbody>
         <tr th:each="account : ${accounts}">
             <!--            <td th:text="${account.id}"/>-->
-            <td th:text="${account.getCustomer().getId()}"/>
-            <td th:text="${account.getIban()}" class="text-center"/>
-            <td th:text="${account.getCurrency()}" class="text-center"/>
+            <td th:text="${account.customer.getId()}"/>
+            <td th:text="${account.iban}" class="text-center"/>
+            <td th:text="${account.currency}" class="text-center"/>
 
 
             <td>

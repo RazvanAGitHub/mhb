@@ -7,6 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.Negative;
+import javax.validation.constraints.NegativeOrZero;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,11 +23,14 @@ import java.time.LocalDateTime;
 @Builder
 public class TransactionInsertDto {
 
-    int accountId;
+    @NotNull
+    Integer accountId;
 
     private String transactionDetails;
 
-    private long debit;
+    @NotNull(message = "Debit must not be null (0 or positive)")
+    private Long debit;
 
-    private long credit;
+    @NotNull(message = "Credit must not be null (0 or negative)")
+    private Long credit;
 }

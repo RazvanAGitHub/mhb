@@ -36,16 +36,22 @@
           th:object="${account}" method="POST">
 
         Customer Id:
-        <input type="text" th:field="*{customer_id}"
-               class="form-control mb-4 col-4"/>
+        <select th:field="*{customer_id}" class="form-control mb-4 col-4">
+            <option th:each="customer : ${customers}"
+                    th:value="${customer.id}"
+                    th:text="${customer.id}" />
+        </select>
 
         IBAN:
         <input type="text" th:field="*{iban}"
                class="form-control mb-4 col-4"/>
 
         Currency:
-        <input type="text" th:field="*{currency}"
-               class="form-control mb-4 col-4"/>
+        <select th:field="*{currency}" class="form-control mb-4 col-4">
+            <option th:value="RON" th:text="RON"></option>
+            <option th:value="EUR" th:text="EUR"></option>
+            <option th:value="USD" th:text="USD"></option>
+        </select>
 
         <button type="submit" class="btn btn-info col-2">Save</button>
 
