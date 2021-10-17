@@ -30,6 +30,18 @@ public class GlobalException {
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(TransactionException.class)
+    public ResponseEntity<Object> handleTransactionException(TransactionException ex, WebRequest webRequest) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("code", ex.getCode());
+        body.put("message", ex.getMessage());
+
+        log.error(ex.getCode() + " - " + ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest webRequest) {
 
@@ -42,5 +54,17 @@ public class GlobalException {
         }
 
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleTransactionException(NotFoundException ex, WebRequest webRequest) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("code", ex.getCode());
+        body.put("message", ex.getMessage());
+
+        log.error(ex.getCode() + " - " + ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 }

@@ -4,10 +4,11 @@ VALUES ('DA111', 'Dan Abraham1', '1111111111111', '0740 000 111', 'da1@yahoo.com
        ('DA333', 'Dan Abraham3', '3333333333333', '0740 000 333', 'da3@yahoo.com', 'Cluj')
 ;
 
-INSERT INTO accounts (customer_id, iban, currency)
-VALUES (1, 'ROINGBEURxxxxxxxxxx1', 'EUR'),
-       (1, 'ROINGBRONxxxxxxxxxx1', 'RON'),
-       (2, 'ROINGBEURxxxxxxxxxx2', 'EUR');
+INSERT INTO accounts (customer_id, iban, currency, status)
+VALUES (1, 'ROINGBEURxxxxxxxxxxxxxx1', 'EUR', 'ACTIVE'),
+       (1, 'ROINGBRONxxxxxxxxxxxxxx1', 'RON', 'ACTIVE'),
+       (2, 'ROINGBEURxxxxxxxxxxxxxx2', 'EUR', 'ACTIVE'),
+       (1, 'ROINGBRONxxxxxxxxxxxxx11', 'RON', 'INACTIVE');
 
 INSERT INTO transactions (account_id, date_time, transaction_details, debit, credit, balance)
 VALUES

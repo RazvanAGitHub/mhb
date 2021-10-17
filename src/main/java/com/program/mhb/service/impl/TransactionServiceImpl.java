@@ -1,10 +1,14 @@
 package com.program.mhb.service.impl;
 
 import com.program.mhb.domain.Account;
+import com.program.mhb.domain.Status;
 import com.program.mhb.domain.Transaction;
 import com.program.mhb.dto.TransactionInsertDto;
 import com.program.mhb.dto.TransactionViewDto;
+import com.program.mhb.exception.NotFoundErrorDetails;
 import com.program.mhb.exception.NotFoundException;
+import com.program.mhb.exception.TransactionErrorDetails;
+import com.program.mhb.exception.TransactionException;
 import com.program.mhb.repository.AccountRepository;
 import com.program.mhb.repository.TransactionRepository;
 import com.program.mhb.service.TransactionService;
@@ -32,7 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionViewDto> getAll() {
         List<TransactionViewDto> transactions = new ArrayList<>();
 
-        transactionRepository.findAll()
+        transactionRepository.getAllByAccountStatus(Status.ACTIVE)
                 .forEach(transaction -> transactions.add(TransactionViewDto.builder()
                         .accountId(transaction.getAccount().getId())
                         .dateTime(transaction.getDateTime())
@@ -48,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionViewDto> getAllByAccountId(int accountId) {
         List<TransactionViewDto> transactions = new ArrayList<>();
 
-        transactionRepository.getTransactionsByAccount_Id(accountId)
+        transactionRepository.getAllByAccountStatusAndAccount_Id(Status.ACTIVE, accountId)
                 .forEach(transaction -> transactions.add(TransactionViewDto.builder()
                         .accountId(transaction.getAccount().getId())
                         .dateTime(transaction.getDateTime())
@@ -64,7 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionViewDto> getAllByAccountIdAndAfterDateTime(int accountId, LocalDateTime afterDateTime) {
         List<TransactionViewDto> transactions = new ArrayList<>();
 
-        transactionRepository.getTransactionsByAccount_IdAndAndDateTimeAfter(accountId, afterDateTime)
+        transactionRepository.getAllByAccountStatusAndAccount_IdAndDateTimeAfter(Status.ACTIVE, accountId, afterDateTime)
                 .forEach(transaction -> transactions.add(TransactionViewDto.builder()
                         .accountId(transaction.getAccount().getId())
                         .dateTime(transaction.getDateTime())
@@ -77,10 +81,15 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionViewDto> getAllByAccountIdAndBetweenDateTime(int accountId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<TransactionViewDto> getAllByAccountIdAndBetweenDateTime(int accountId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws TransactionException {
         List<TransactionViewDto> transactions = new ArrayList<>();
 
-        transactionRepository.getTransactionsByAccount_IdAndDateTimeIsBetween(accountId, startDateTime, endDateTime)
+        if (startDateTime.isAfter(endDateTime)) {
+            throw new TransactionException(TransactionErrorDetails.TRANSACTION_END_DATE_TIME_INVALID.getReasonPhrase(),
+                    TransactionErrorDetails.TRANSACTION_END_DATE_TIME_INVALID.getValue());
+        }
+
+        transactionRepository.getAllByAccountStatusAndAccount_IdAndDateTimeIsBetween(Status.ACTIVE, accountId, startDateTime, endDateTime)
                 .forEach(transaction -> transactions.add(TransactionViewDto.builder()
                         .accountId(transaction.getAccount().getId())
                         .dateTime(transaction.getDateTime())
@@ -94,21 +103,40 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void save(TransactionInsertDto transactionInsertDto) {
-        int accountId;
+    public void save(TransactionInsertDto transactionInsertDto) throws TransactionException {
         Transaction transactionSave;
 
+        transactionSave = Transaction.builder()
+                .account(getAccount(transactionInsertDto))
+                .dateTime(LocalDateTime.now())
+                .transactionDetails(transactionInsertDto.getTransactionDetails())
+                .debit(transactionInsertDto.getDebit())
+                .credit(transactionInsertDto.getCredit())
+                .balance(calculateBalance(transactionInsertDto))
+                .build();
+
+        transactionRepository.save(transactionSave);
+    }
+
+    private Account getAccount(TransactionInsertDto transactionInsertDto) {
         Account account;
-        Optional<Account> accountOptional = accountRepository.findById(transactionInsertDto.getAccountId());
+        Optional<Account> accountOptional = accountRepository.getByStatusAndId(Status.ACTIVE, transactionInsertDto.getAccountId());
 
         if (accountOptional.isPresent()) {
             account = accountOptional.get();
-            accountId = account.getId();
         } else {
-            throw new NotFoundException("Account with id: " + transactionInsertDto.getAccountId() + " not found.");
+            throw new NotFoundException(NotFoundErrorDetails.NOT_FOUND_ID_INVALID.getReasonPhrase(),
+                    NotFoundErrorDetails.NOT_FOUND_ID_INVALID.getValue());
         }
 
+        return account;
+    }
+
+    private long calculateBalance(TransactionInsertDto transactionInsertDto) throws TransactionException {
+        long calculatedBalance = 0;
         long lastBalance = 0;
+        int accountId = getAccount(transactionInsertDto).getId();
+
         Optional<Transaction> lastTransactionOptional = transactionRepository.getTransactionsByAccount_IdOrderByDateTimeDesc(accountId)
                 .stream()
                 .findFirst();
@@ -117,46 +145,13 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         log.info("_________________ lastBalance = " + lastBalance);
-        long calculatedBalance =  lastBalance + transactionInsertDto.getDebit() + transactionInsertDto.getCredit();
+        calculatedBalance =  lastBalance + transactionInsertDto.getDebit() + transactionInsertDto.getCredit();
         log.info("_________________ calculatedBalance = " + calculatedBalance);
-        transactionSave = Transaction.builder()
-                .account(account)
-                .dateTime(LocalDateTime.now())
-                .transactionDetails(transactionInsertDto.getTransactionDetails())
-                .debit(transactionInsertDto.getDebit())
-                .credit(transactionInsertDto.getCredit())
-                .balance(calculatedBalance)
-                .build();
+        if (calculatedBalance < 0) {
+            throw new TransactionException(TransactionErrorDetails.TRANSACTION_INSUFFICIENT_FOUNDS.getReasonPhrase(),
+                    TransactionErrorDetails.TRANSACTION_INSUFFICIENT_FOUNDS.getValue());
+        }
 
-        transactionRepository.save(transactionSave);
+        return calculatedBalance;
     }
-// TODO de sters saveSmart()
-//    @Override
-//    public void saveSmart(@Valid Transaction transaction) {
-//        Account account;
-//        Optional<Account> accountOptional = accountRepository.findById(transaction.getAccount().getId());
-//
-//        if (accountOptional.isPresent()) {
-//            account = accountOptional.get();
-////            accountId = account.getId();
-//        } else {
-//            throw new NotFoundException("Account with id: " + transaction.getAccount().getId() + " not found.");
-//        }
-//
-//        long lastBalance = 0;
-//        Optional<Transaction> lastTransactionOptional = transactionRepository.getTransactionsByAccount_IdOrderByDateTimeDesc(account.getId())
-//                .stream()
-//                .findFirst();
-//        if (lastTransactionOptional.isPresent()) {
-//            lastBalance = lastTransactionOptional.get().getBalance();
-//        }
-//
-//        log.info("_________________ lastBalance = " + lastBalance);
-//        long calculatedBalance =  lastBalance + transaction.getDebit() + transaction.getCredit();
-//        log.info("_________________ calculatedBalance = " + calculatedBalance);
-//
-//        transaction.setBalance(calculatedBalance);
-//
-//        transactionRepository.save(transaction);
-//    }
 }

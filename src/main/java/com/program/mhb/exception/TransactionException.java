@@ -1,8 +1,10 @@
 package com.program.mhb.exception;
 
+import lombok.Builder;
 import lombok.Getter;
 
-public class NotFoundException extends RuntimeException {
+@Builder
+public class TransactionException extends Exception {
 
     @Getter
     private String message;
@@ -10,7 +12,7 @@ public class NotFoundException extends RuntimeException {
     @Getter
     private int code;
 
-    public NotFoundException(String message, int code) {
+    public TransactionException(String message, int code) {
         super(message);
         this.message = message;
         this.code = code;

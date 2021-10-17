@@ -13,20 +13,14 @@ import java.util.List;
 @Validated
 public interface AccountService {
 
-    @Transactional(readOnly = true)
-    List<AccountViewDto> getAll();
-
     /**
      * Get all accounts...
      */
     @Transactional(readOnly = true)
-    List<Account> getAllBulk();
+    List<Account> getAll();
 
     @Transactional
     AccountViewDto getById(@Valid int id);
-
-    @Transactional
-    List<AccountShortViewDto> getAllByCustomerId(@Valid int customerId);
 
     @Transactional
     List<Account> getAccountsByCustomer_Id(@Valid int id);
@@ -36,4 +30,7 @@ public interface AccountService {
 
     @Transactional
     void deleteById(@Valid int id);
+
+    @Transactional
+    void closeAccountById(@Valid int id);
 }

@@ -33,7 +33,9 @@ public class Account {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    // TODO - check ce s-a facut in plus in BA la enumeration Type
     private Currency currency;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

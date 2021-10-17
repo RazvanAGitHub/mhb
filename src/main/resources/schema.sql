@@ -18,7 +18,8 @@ CREATE TABLE accounts
     id          INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT         NOT NULL,
     iban        VARCHAR(24) NOT NULL,
-    currency    VARCHAR(3)  NOT NULL
+    currency    VARCHAR(3)  NOT NULL,
+    status      VARCHAR(24) NOT NULL
 );
 
 DROP TABLE IF EXISTS transactions;

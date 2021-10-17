@@ -41,21 +41,21 @@ public class AccountController {
 //    }
 
     @GetMapping
-    public String getAllBulk(Model model) {
-        model.addAttribute("accounts", accountService.getAllBulk());
+    public String getAll(Model model) {
+        model.addAttribute("accounts", accountService.getAll());
         return "accounts/list-accounts";
     }
 
-    @GetMapping(value = "/account/{id}")
-    public AccountViewDto getById(@PathVariable("id") int id) {
-        return accountService.getById(id);
-    }
+//    @GetMapping(value = "/account/{id}")
+////    public AccountViewDto getById(@PathVariable("id") int id) {
+////        return accountService.getById(id);
+//    public String getById(@PathVariable("id") int id, Model model) {
+//        model.addAttribute("accounts", accountService.getById(id));
+//        return "accounts/list-accounts";
+//    }
 
     @GetMapping(value = "/customer/{id}")
-//    public List<AccountShortViewDto> getAllByCustomerId(@PathVariable("id") int id) {
     public String getAllByCustomerId(@PathVariable("id") int id, Model model) {
-//        return accountService.getAllByCustomerId(id);
-//        accountService.getAllByCustomerId(id);
         model.addAttribute("accounts", accountService.getAccountsByCustomer_Id(id));
         return "accounts/list-accounts-by-customer-id";
     }
@@ -75,8 +75,6 @@ public class AccountController {
     }
 
     @PostMapping(value = "/create")
-    // TODO fara @RequestBody nu merge + CSRF disabled
-//    public void create(@RequestBody AccountViewDto accountViewDto) {
     public String create(@ModelAttribute("account") AccountViewDto accountViewDto) throws AccountException {
         accountService.save(accountViewDto);
 
@@ -84,13 +82,18 @@ public class AccountController {
     }
 
     @GetMapping(value = "/delete")
-    // TODO cu Thymeleaf nu merge cu DeleteMapping, cred ca m-am chinuit vreo 2 ore
     // TODO ceva de genul: http://localhost:8080/accounts/delete?id=1
-//    public void delete(@RequestParam("id") int id) {
     public String delete(@RequestParam("id") int id) {
         log.info("Ready to delete");
         accountService.deleteById(id);
         log.info("After it was theoretically deleted");
+        return "redirect:/accounts";
+    }
+
+    @GetMapping(value = "/close")
+    public String close(@RequestParam("id") int id) {
+        accountService.closeAccountById(id);
+
         return "redirect:/accounts";
     }
 }
