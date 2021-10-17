@@ -2,7 +2,6 @@ package com.program.mhb.controller;
 
 import com.program.mhb.domain.Customer;
 import com.program.mhb.dto.AccountViewDto;
-import com.program.mhb.exception.AccountException;
 import com.program.mhb.service.AccountService;
 import com.program.mhb.service.CustomerService;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -31,31 +29,22 @@ public class AccountController {
         this.customerService = customerService;
     }
 
-//    @GetMapping//(value = "/list")
-////    public List<AccountViewDto> getAll() {
-//    public String getAll(Model model) {
-//        log.info("*** List of accounts: ");
-////        return accountService.getAll();
-//        model.addAttribute("accounts", accountService.getAll());
-//        return "accounts/list-accounts";
-//    }
-
     @GetMapping
     public String getAll(Model model) {
         model.addAttribute("accounts", accountService.getAll());
         return "accounts/list-accounts";
     }
 
-//    @GetMapping(value = "/account/{id}")
-////    public AccountViewDto getById(@PathVariable("id") int id) {
-////        return accountService.getById(id);
-//    public String getById(@PathVariable("id") int id, Model model) {
-//        model.addAttribute("accounts", accountService.getById(id));
-//        return "accounts/list-accounts";
-//    }
+    @GetMapping(value = "/account/{id}")
+//    public AccountViewDto getById(@PathVariable("id") int id) {
+//        return accountService.getById(id);
+    public String getById(@PathVariable("id") int id, Model model) {
+        model.addAttribute("accounts", accountService.getById(id));
+        return "accounts/list-accounts";
+    }
 
-    @GetMapping(value = "/customer/{id}")
-    public String getAllByCustomerId(@PathVariable("id") int id, Model model) {
+    @GetMapping(value = "/customer")
+    public String getAllByCustomerId(@RequestParam("id") int id, Model model) {
         model.addAttribute("accounts", accountService.getAccountsByCustomer_Id(id));
         return "accounts/list-accounts-by-customer-id";
     }
@@ -75,18 +64,17 @@ public class AccountController {
     }
 
     @PostMapping(value = "/create")
-    public String create(@ModelAttribute("account") AccountViewDto accountViewDto) throws AccountException {
+    public String create(@ModelAttribute("account") AccountViewDto accountViewDto) {
         accountService.save(accountViewDto);
 
         return "redirect:/accounts";
     }
 
     @GetMapping(value = "/delete")
-    // TODO ceva de genul: http://localhost:8080/accounts/delete?id=1
     public String delete(@RequestParam("id") int id) {
-        log.info("Ready to delete");
         accountService.deleteById(id);
-        log.info("After it was theoretically deleted");
+        log.info("Account with id = " + id + " was deleted");
+
         return "redirect:/accounts";
     }
 

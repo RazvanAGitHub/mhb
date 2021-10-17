@@ -5,7 +5,6 @@ import com.program.mhb.repository.CustomerRepository;
 import com.program.mhb.service.CustomerService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,11 +16,11 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerRepository = customerRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Customer> findAll() {
-//        List<Customer> customers = new ArrayList<>();
-//        customerRepository.findAll().forEach(customer -> customers.add());
-//        return customers;
         return customerRepository.findAll();
     }
 }

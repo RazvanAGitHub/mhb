@@ -9,6 +9,11 @@ import java.util.List;
 @Validated
 public interface CustomerService {
 
+    /**
+     * Return the List of customers
+     *
+     * @return
+     */
     @Transactional(readOnly = true)
     List<Customer> findAll();
 }

@@ -15,9 +15,9 @@ public class LoginController {
         return "access-denied";
     }
 
-    @GetMapping("/showStaffPage")
-    public String showStaffPage() {
-        return "staff";
+    @GetMapping("/showMainPage")
+    public String showMainPage() {
+        return "main";
     }
 
 }

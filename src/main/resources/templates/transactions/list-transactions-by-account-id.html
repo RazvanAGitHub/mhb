@@ -23,7 +23,7 @@
     <div sec:authorize="isAuthenticated()">
         User: <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
         <span th:text="${#authentication.getPrincipal().authorities}"></span> |
-        <a th:href="@{/showStaffPage}">Staff</a>
+        <a th:href="@{/showMainPage}">Main</a>
         <!-- Add a logout button -->
         <form action="#" th:action="@{/logout}" method="POST">
             <input type="submit" value="Logout" class="btn btn-outline-primary btn-sm mt-1"/>

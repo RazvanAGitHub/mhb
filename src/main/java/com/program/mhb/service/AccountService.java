@@ -1,9 +1,7 @@
 package com.program.mhb.service;
 
 import com.program.mhb.domain.Account;
-import com.program.mhb.dto.AccountShortViewDto;
 import com.program.mhb.dto.AccountViewDto;
-import com.program.mhb.exception.AccountException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,23 +12,44 @@ import java.util.List;
 public interface AccountService {
 
     /**
-     * Get all accounts...
+     * Return the List of "active" accounts
+     *
+     * @return
      */
     @Transactional(readOnly = true)
     List<Account> getAll();
 
-    @Transactional
+    /**
+     * Return an "active" account with the given parameter index
+     *
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly = true)
     AccountViewDto getById(@Valid int id);
 
-    @Transactional
+    /**
+     * Return the List of "active" accounts for a specific index of a Customer
+     *
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly = true)
     List<Account> getAccountsByCustomer_Id(@Valid int id);
 
-    @Transactional(rollbackFor = AccountException.class)
-    void save(@Valid AccountViewDto accountViewDto) throws AccountException;
-
+    /**
+     * Creating an account with the information provided from the parameter AccountViewDto
+     *
+     * @param accountViewDto
+     */
     @Transactional
-    void deleteById(@Valid int id);
+    void save(@Valid AccountViewDto accountViewDto);
 
+    /**
+     * Closing an "active" account with the given parameter index (status of the account becomes "inactive")
+     *
+     * @param id
+     */
     @Transactional
     void closeAccountById(@Valid int id);
 }

@@ -11,15 +11,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-    <title>Accounts by Customer ID</title>
+    <title>Customer List</title>
 </head>
 
 <body>
 
-<div class="container-fluid mt-3 mb-5">
+<div class="container">
 
-    <h3>Accounts by Customer ID</h3>
-
+    <h3>Customer List</h3>
     <div sec:authorize="isAuthenticated()">
         User: <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
         <span th:text="${#authentication.getPrincipal().authorities}"></span> |
@@ -29,25 +28,41 @@
             <input type="submit" value="Logout" class="btn btn-outline-primary btn-sm mt-1"/>
         </form>
     </div>
-
     <hr>
 
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
         <tr>
-            <th rowspan=2 class="align-middle">Customer ID</th>
-            <th rowspan=2 class="align-middle">IBAN</th>
-            <th rowspan=2 class="align-middle">Currency</th>
+            <th>id</th>
+            <th>username</th>
+            <th class="text-center">name</th>
+            <th class="text-center">cnp</th>
+            <th class="text-center">phone</th>
+            <th class="text-center">mail</th>
+            <th class="text-center">address</th>
+            <th></th>
         </tr>
         </thead>
 
         <tbody>
-        <tr th:each="account : ${accounts}">
+        <tr th:each="customer : ${customers}">
+            <td th:text="${customer.id}"/>
+            <td th:text="${customer.username}"/>
+            <td th:text="${customer.name}"/>
+            <td th:text="${customer.cnp}"/>
+            <td th:text="${customer.phone}"/>
+            <td th:text="${customer.mail}"/>
+            <td th:text="${customer.address}"/>
 
-            <td th:text="${account.getCustomer().getId()}"/>
-            <td th:text="${account.iban}"/>
-            <td th:text="${account.currency}"/>
+            <td>
+                <a th:href="@{/accounts/customer/(id=${customer.id})}"
+                   class="btn btn-primary btn-sm">
+                    Show Accounts for a user
+                </a>
+            </td>
+
         </tr>
+
         </tbody>
     </table>
 

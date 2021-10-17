@@ -3,13 +3,9 @@ package com.program.mhb.service.impl;
 import com.program.mhb.domain.Account;
 import com.program.mhb.domain.Customer;
 import com.program.mhb.domain.Status;
-import com.program.mhb.dto.AccountShortViewDto;
 import com.program.mhb.dto.AccountViewDto;
-import com.program.mhb.exception.AccountErrorDetails;
-import com.program.mhb.exception.AccountException;
 import com.program.mhb.exception.NotFoundErrorDetails;
 import com.program.mhb.exception.NotFoundException;
-import com.program.mhb.helper.AccountValidator;
 import com.program.mhb.repository.AccountRepository;
 import com.program.mhb.repository.CustomerRepository;
 import com.program.mhb.service.AccountService;
@@ -17,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,12 +22,10 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
-    private final AccountValidator accountValidator;
 
-    public AccountServiceImpl(AccountRepository accountRepository, CustomerRepository customerRepository, AccountValidator accountValidator) {
+    public AccountServiceImpl(AccountRepository accountRepository, CustomerRepository customerRepository) {
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
-        this.accountValidator = accountValidator;
     }
 
     /**
@@ -43,6 +36,9 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.getAllByStatus(Status.ACTIVE);//findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AccountViewDto getById(int id) {
         Account account;
@@ -57,17 +53,21 @@ public class AccountServiceImpl implements AccountService {
         return new AccountViewDto(account.getCustomer().getId(), account.getIban(), account.getCurrency());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Account> getAccountsByCustomer_Id(int id) {
         return accountRepository.getAllByStatusAndAndCustomer_Id(Status.ACTIVE, id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void save(@Valid AccountViewDto accountViewDto) throws AccountException {
-        log.info("#################### Trying to Save smart");
+    public void save(@Valid AccountViewDto accountViewDto) {
         Account account = new Account();
 
-//        accountValidator.isAccountViewDtoValid(accountViewDto);
         Customer customer;
         Optional<Customer> customerOptional = customerRepository.findById(accountViewDto.getCustomer_id());
 
@@ -84,15 +84,12 @@ public class AccountServiceImpl implements AccountService {
         account.setStatus(Status.ACTIVE);
 
         accountRepository.save(account);
-        log.info("#################### Account should be created smart now");
+        log.info("#################### Account should be created");
     }
 
-    @Override
-    public void deleteById(int id) {
-        accountRepository.deleteById(id);
-        log.info("#################### Account should be deleted ");
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void closeAccountById(@Valid int id) {
         Account account;

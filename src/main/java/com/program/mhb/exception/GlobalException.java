@@ -18,18 +18,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalException {
 
-    @ExceptionHandler(AccountException.class)
-    public ResponseEntity<Object> handleAccountException(AccountException ex, WebRequest webRequest) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("code", ex.getCode());
-        body.put("message", ex.getMessage());
-
-        log.error(ex.getCode() + " - " + ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
-    }
-
     @ExceptionHandler(TransactionException.class)
     public ResponseEntity<Object> handleTransactionException(TransactionException ex, WebRequest webRequest) {
         Map<String, Object> body = new LinkedHashMap<>();

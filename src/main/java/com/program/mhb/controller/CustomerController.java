@@ -1,14 +1,14 @@
 package com.program.mhb.controller;
 
-import com.program.mhb.domain.Customer;
+
 import com.program.mhb.service.impl.CustomerServiceImpl;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/customers")
 public class CustomerController {
 
@@ -19,12 +19,10 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer> getAll() {
-       List<Customer> customers = customerService.findAll();
-        return customers;
+    public String getAll(Model model) {
+        model.addAttribute("customers", customerService.findAll());
+
+        return "customers/list-customers";
     }
-
-
-
 
 }

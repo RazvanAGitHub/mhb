@@ -32,6 +32,9 @@ public class TransactionServiceImpl implements TransactionService {
         this.accountRepository = accountRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<TransactionViewDto> getAll() {
         List<TransactionViewDto> transactions = new ArrayList<>();
@@ -48,6 +51,9 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<TransactionViewDto> getAllByAccountId(int accountId) {
         List<TransactionViewDto> transactions = new ArrayList<>();
@@ -64,6 +70,9 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<TransactionViewDto> getAllByAccountIdAndAfterDateTime(int accountId, LocalDateTime afterDateTime) {
         List<TransactionViewDto> transactions = new ArrayList<>();
@@ -80,6 +89,9 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<TransactionViewDto> getAllByAccountIdAndBetweenDateTime(int accountId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws TransactionException {
         List<TransactionViewDto> transactions = new ArrayList<>();
@@ -98,10 +110,13 @@ public class TransactionServiceImpl implements TransactionService {
                         .credit(transaction.getCredit())
                         .balance(transaction.getBalance())
                         .build()));
-//        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@ transactions = " + transactions);
+
         return transactions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void save(TransactionInsertDto transactionInsertDto) throws TransactionException {
         Transaction transactionSave;
@@ -145,7 +160,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         log.info("_________________ lastBalance = " + lastBalance);
-        calculatedBalance =  lastBalance + transactionInsertDto.getDebit() + transactionInsertDto.getCredit();
+        calculatedBalance = lastBalance + transactionInsertDto.getDebit() + transactionInsertDto.getCredit();
         log.info("_________________ calculatedBalance = " + calculatedBalance);
         if (calculatedBalance < 0) {
             throw new TransactionException(TransactionErrorDetails.TRANSACTION_INSUFFICIENT_FOUNDS.getReasonPhrase(),

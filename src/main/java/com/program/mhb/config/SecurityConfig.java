@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    // TODO Varianta_1 --> inMemoryAuthentification()
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         PasswordEncoder encoder =
@@ -21,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth
                 .inMemoryAuthentication()
                 .withUser("user")
-                .password(encoder.encode("password"))
+                .password(encoder.encode("user"))
                 .roles("USER")
                 .and()
                 .withUser("admin")
@@ -32,25 +31,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                // TODO a trebuit sa-i dau CSRF disable ca sa mearga in Postman + @RequestBody on create
-//                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/**", "/customers/**", "/accounts/**").permitAll()//.hasRole("ADMIN")//permitAll()
-                .antMatchers("/showStaffPage").permitAll()
+                .antMatchers("/customers/**").hasRole("ADMIN")
+                .antMatchers("/accounts/**", "/transactions").permitAll()
                 .and()
-                .formLogin()//.permitAll()
+                .formLogin().permitAll()
                 .loginPage("/showMyLoginPage")
                 .loginProcessingUrl("/authenticateTheUser")
-                .defaultSuccessUrl("/showStaffPage", true)
+                .defaultSuccessUrl("/showMainPage", true)
                 .permitAll()
                 .and()
                 .logout().permitAll()
                 .and().exceptionHandling().accessDeniedPage("/access-denied");
-//                .and()
-//                .authorizeRequests()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .httpBasic();
     }
 }
